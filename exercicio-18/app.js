@@ -20,28 +20,87 @@
   
   Dica: pesquise pelo método "insertAdjacentElement", no MDN;
 */
+const inputUsername = document.querySelector('input');
 const form = document.querySelector('form');
-const feedbackSubmit = document.createElement('P')
-const feedbackKeyup = document.createElement('P')
+const submitBtn = document.querySelector('.button');
 
-const isAValidUsername = username => /^[a-zA-Z]{6,}$/.test(username);
+const paragraphFeedbackInput = document.createElement('P');
+const paragraphFeedbackSubmit = document.createElement('P');
 
-form.enviarbtn.insertAdjacentElement('afterend', feedbackSubmit)
-form.username.insertAdjacentElement('afterend', feedbackKeyup)
+paragraphFeedbackSubmit.setAttribute('data-feedback', 'submit-feedback')
 
-form.username.addEventListener('keyup', event => {
-  const username = event.target.value;
-  const isAValidInput = isAValidUsername(username);
-  
-  if (isAValidInput) {
-    feedbackKeyup.setAttribute('class', 'username-success-feedback')
-    feedbackKeyup.textContent = 'Username válido =)'
-    return
+
+paragraphSubmitInfoSucess = {
+  paragraph: paragraphFeedbackSubmit,
+  textContent: 'Dados enviados =)',
+  className: 'submit-success-feedback',
+  previusSibling: submitBtn
+};
+
+paragraphSubmitInfoFailed = {
+  paragraph: paragraphFeedbackSubmit,
+  textContent: 'Por favor, insira um username válido',
+  className: 'submit-help-feedback',
+  previusSibling: submitBtn
+};
+
+paragraphInputInfoValid = {
+  paragraph: paragraphFeedbackInput,
+  textContent: 'Username válido =)',
+  className: 'username-success-feedback',
+  previusSibling: inputUsername
+}
+
+paragraphInputInfoFailed = {
+  paragraph: paragraphFeedbackInput,
+  textContent: 'O valor deve conter no mínimo 6 caracteres, com apenas letras maiúsculas e/ou minúsculas',
+  className: 'username-help-feedback',
+  previusSibling: inputUsername
+}
+
+const addElementIntoDOM = ({ paragraph, textContent, className, previusSibling }) => {
+  paragraph.textContent = textContent;
+  paragraph.setAttribute('class', className)
+  previusSibling.insertAdjacentElement('afterend', paragraph)
+}
+
+const isAValidUsername = (username) => /^[a-zA-Z]{6,}$/.test(username);
+
+const removeSubmitParagraph = () => {
+  const paragraphSubmit = document.querySelector('[data-feedback="submit-feedback"]');
+
+  if (paragraphSubmit) {
+    paragraphSubmit.remove();
   }
-  feedbackKeyup.setAttribute('class', 'username-help-feedback')
-  feedbackKeyup.textContent = 'O valor deve conter no mínimo 6 caracteres,com apenas letras maiúsculas e/ou minúsculas'
+}
 
-})
+const formValidation = event => {
+  event.preventDefault();
+  const usernameValue = inputUsername.value;
+
+  if (isAValidUsername(usernameValue)) {
+    addElementIntoDOM(paragraphSubmitInfoSucess);
+    return;
+  }
+
+  addElementIntoDOM(paragraphSubmitInfoFailed);
+}
+
+const inputUsernameValidation = event => {
+  const usernameValue = event.target.value;
+  removeSubmitParagraph();
+
+  if (!isAValidUsername(usernameValue)) {
+    addElementIntoDOM(paragraphInputInfoFailed);
+    return;
+  }
+
+  addElementIntoDOM(paragraphInputInfoValid);
+}
+
+inputUsername.addEventListener('input', inputUsernameValidation)
+
+form.addEventListener('submit', formValidation)
 
 /*
   02
@@ -55,22 +114,6 @@ form.username.addEventListener('keyup', event => {
   - Não insira o parágrafo manualmente no index.html.
 */
 
-
-
-form.addEventListener('submit', event => {
-  event.preventDefault();
-
-  const isValidUser = isAValidUsername(form.username.value)
-
-  if (isValidUser) {
-    feedbackSubmit.setAttribute('class', 'submit-success-feedback')
-    feedbackSubmit.textContent = 'Username válido =)'
-    return
-  }
-
-  feedbackSubmit.setAttribute('class', 'submit-help-feedback')
-  feedbackSubmit.textContent = 'Por favor, insira um username válido'
-})
 
 
 /*
@@ -92,11 +135,11 @@ form.addEventListener('submit', event => {
 */
 
 
-const some = function (list,callback) {
+const some = function (list, callback) {
   let isAMatch;
-  for(let i = 0;i < list.length;i++){
+  for (let i = 0; i < list.length; i++) {
     isAMatch = callback(list[i])
-    if(isAMatch){
+    if (isAMatch) {
       break
     }
   }
@@ -105,4 +148,4 @@ const some = function (list,callback) {
 }
 
 
-console.log(some([1,0,10], item => item === 0))
+console.log(some([1, 0, 10], item => item === 0))
