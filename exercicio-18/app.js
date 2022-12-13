@@ -99,7 +99,6 @@ const inputUsernameValidation = event => {
 }
 
 inputUsername.addEventListener('input', inputUsernameValidation)
-
 form.addEventListener('submit', formValidation)
 
 /*
